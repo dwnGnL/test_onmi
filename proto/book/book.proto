@@ -1,0 +1,19 @@
+syntax = "proto3";
+option go_package = "testWort/proto/book";
+
+
+message Book {
+ int64 id = 1;
+ string name = 2;
+}
+
+message BookFilter {
+    string name = 1;
+}
+
+message BookList { repeated Book books = 1; }
+
+service BookService {
+  rpc GetBooks(BookFilter) returns (BookList);
+ }
+
