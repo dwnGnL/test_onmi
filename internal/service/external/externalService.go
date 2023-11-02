@@ -71,10 +71,14 @@ func (c *externalClient) canWriteNow() bool {
 
 func (c *externalClient) processBatch(ctx context.Context) {
 	c.counter += len(c.writeBuffer)
-	err := c.client.Process(ctx, c.writeBuffer)
+	toWriteBuffer := c.writeBuffer
+	if len(c.writeBuffer) > int(c.limit) {
+		toWriteBuffer = c.writeBuffer[:c.limit]
+	}
+	err := c.client.Process(ctx, toWriteBuffer)
 	if err != nil {
 		goerrors.Log().Error("process batch err, need wait before write again")
 		return
 	}
-	c.writeBuffer = c.writeBuffer[:0]
+	c.writeBuffer = c.writeBuffer[len(toWriteBuffer):]
 }
